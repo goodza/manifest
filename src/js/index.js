@@ -63,6 +63,24 @@ function createMemo(id, text, position, size) {
 
   memo.appendChild(textarea);
 
+  const countdown = document.createElement("countdown");
+  countdown.timerFlag = false;
+
+  countdown.addEventListener("click", function (e) {
+    !e.target.interval && (e.target.initialTime = new Date().getTime());
+
+    !e.target.timerFlag
+      ? e.target.interval = setInterval(() => {
+        e.target.innerHTML = Math.floor((new Date().getTime() - e.target.initialTime) / 1000);
+      }, 1000)
+      : clearInterval(e.target.interval);
+    e.target.timerFlag++;
+  });
+
+  countdown.innerHTML = "0";
+  memo.appendChild(countdown);
+  console.log(memo.getAttribute("data-id"));
+
   const drag = document.createElement("div");
   drag.classList.add("drag");
   drag.addEventListener("mousedown", onMouseDown);
