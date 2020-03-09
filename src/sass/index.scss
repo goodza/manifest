@@ -102,6 +102,9 @@ body {
                     outline: 0;
                     resize: none;
                     color: red;
+                    textarea {
+                        position: relative;
+                    }
                 }
                 textarea.input {
                     position: absolute;

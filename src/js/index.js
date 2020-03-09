@@ -30,6 +30,8 @@ function onMouseDown(e) {
 */
 
 function createMemo(id, text, position, size) {
+
+
   const memo = document.createElement("div");
   memo.setAttribute("data-id", id);
   memo.classList.add("memo");
@@ -57,7 +59,7 @@ function createMemo(id, text, position, size) {
   textarea.addEventListener("blur", function (e) { e.target.classList.remove("active"); }, { passive: false, useCapture: false });
   textarea.addEventListener("input", function (e) {
     const memos = getLocalStorageItem("manifest_memos");
-    memos[id] = { ...memos[id], text: e.target.value };
+    memos[id] = { ...memos[id], text: e.target.value};
     setLocalStorageItem("manifest_memos", memos);
   }, { passive: false, useCapture: false });
 
@@ -65,21 +67,28 @@ function createMemo(id, text, position, size) {
 
   const countdown = document.createElement("countdown");
   countdown.timerFlag = false;
+  const TT = getLocalStorageItem(id+"_time")
+  countdown.time = TT != null ? TT : setLocalStorageItem(id+"_time",0)
+  countdown.innerHTML = countdown.time;
 
   countdown.addEventListener("click", function (e) {
+    
+    const ID = e.target.parentNode.getAttribute("data-id");
     !e.target.interval && (e.target.initialTime = new Date().getTime());
 
     !e.target.timerFlag
       ? e.target.interval = setInterval(() => {
-        e.target.innerHTML = Math.floor((new Date().getTime() - e.target.initialTime) / 1000);
+        e.target.time += 1;
+        e.target.innerHTML = e.target.time
+        setLocalStorageItem(ID+"_time",e.target.time)
       }, 1000)
       : clearInterval(e.target.interval);
     e.target.timerFlag++;
+
   });
 
-  countdown.innerHTML = "0";
+
   memo.appendChild(countdown);
-  console.log(memo.getAttribute("data-id"));
 
   const drag = document.createElement("div");
   drag.classList.add("drag");
