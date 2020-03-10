@@ -30,8 +30,6 @@ function onMouseDown(e) {
 */
 
 function createMemo(id, text, position, size) {
-
-
   const memo = document.createElement("div");
   memo.setAttribute("data-id", id);
   memo.classList.add("memo");
@@ -59,34 +57,30 @@ function createMemo(id, text, position, size) {
   textarea.addEventListener("blur", function (e) { e.target.classList.remove("active"); }, { passive: false, useCapture: false });
   textarea.addEventListener("input", function (e) {
     const memos = getLocalStorageItem("manifest_memos");
-    memos[id] = { ...memos[id], text: e.target.value};
+    memos[id] = { ...memos[id], text: e.target.value };
     setLocalStorageItem("manifest_memos", memos);
   }, { passive: false, useCapture: false });
 
   memo.appendChild(textarea);
 
   const countdown = document.createElement("countdown");
-  countdown.timerFlag = false;
-  const TT = getLocalStorageItem(id+"_time")
-  countdown.time = TT != null ? TT : setLocalStorageItem(id+"_time",0)
+  countdown.timerStart = false;
+  countdown.time = getLocalStorageItem(id + "_time") || 0;
   countdown.innerHTML = countdown.time;
+  countdown.id = id;
 
   countdown.addEventListener("click", function (e) {
-    
-    const ID = e.target.parentNode.getAttribute("data-id");
     !e.target.interval && (e.target.initialTime = new Date().getTime());
 
-    !e.target.timerFlag
+    !e.target.timerStart
       ? e.target.interval = setInterval(() => {
         e.target.time += 1;
-        e.target.innerHTML = e.target.time
-        setLocalStorageItem(ID+"_time",e.target.time)
+        e.target.innerHTML = e.target.time;
+        setLocalStorageItem(e.target.id + "_time", e.target.time);
       }, 1000)
       : clearInterval(e.target.interval);
-    e.target.timerFlag++;
-
+    e.target.timerStart++;
   });
-
 
   memo.appendChild(countdown);
 
@@ -211,6 +205,7 @@ function handleMemoClose(e) {
     const memos = getLocalStorageItem("manifest_memos");
     delete memos[id];
     setLocalStorageItem("manifest_memos", memos);
+    localStorage.removeItem(id+"_time")
 
     board.removeChild(e.target.parentNode);
   }
